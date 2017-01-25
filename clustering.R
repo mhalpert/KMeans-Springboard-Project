@@ -2,6 +2,8 @@
 # Go here for the original blog post and solutions
 # http://www.r-bloggers.com/k-means-clustering-from-r-in-action/
 
+## Homework assignment by Michael Halpert.  1/24/17
+
 # Exercise 0: Install these packages if you don't have them already
 
 # install.packages(c("cluster", "rattle","NbClust"))
@@ -16,6 +18,7 @@ head(wine)
 # Exercise 1: Remove the first column from the data and scale
 # it using the scale() function
 df <- scale(wine[-1])
+head(df)
 
 # Now we'd like to cluster the data using K-Means. 
 # How do we decide how many clusters to use if you don't know that already?
@@ -72,22 +75,27 @@ fit.km <- kmeans(df, 3, nstart = 25)
 # compares to the actual wine types in wine$Type. Would you consider this a good
 # clustering?
 
-conf_wine <- table(wine$Type, fit.km$cluster)
+conf_wine <- table(fit.km$cluster, wine$Type)
+print(conf_wine)
 accuracy_wine <- sum(diag(conf_wine))/sum(conf_wine)
 print(accuracy_wine)
 
-## The clustering seems to have identified the right wine 93.8% of the time.  This seems to be a highly accurate model. 
+accuracy_wine_2 <- (59+65+48) / sum(conf_wine)
+print(accuracy_wine_2)
+
+## The clustering seems to have identified the right wine 36.5% of the time.  It seems to have correctly identified cluster 2, but it has swapped cluster 1 and 3. 
+## If cluster 1 and 3 are swapped, then the accuracy seems to go up to 96.6%.
 
 library(flexclust)
 randIndex(conf_wine)
 
-## The Adjusted Rand Index is .814 which is pretty good.  
+## The Adjusted Rand Index is .897 which is pretty good.  
 
 # Exercise 6:
 # * Visualize these clusters using  function clusplot() from the cluster library
 # * Would you consider this a good clustering?
 
 library(cluster)
-clusplot(df, fit.km$cluster, color=TRUE, shade=TRUE) 
+clusplot(df, fit.km$cluster, color=TRUE, shade=TRUE, lines=0) 
 
 ## Based on the charts, this looks like a pretty high quality clustering.  There is a minor overlap between cluster 1 and 2, but overall the seperation looks very strong.
